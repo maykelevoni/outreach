@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: outreach-redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  google-maps-scraper:
+    image: gosom/google-maps-scraper:latest
+    container_name: outreach-gmaps-scraper
+    ports:
+      - '8080:8080'
+    volumes:
+      - gmaps-data:/gmapsdata
+    command: ['-data-folder', '/gmapsdata', '-email']
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'wget', '--spider', '-q', 'http://localhost:8080/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  redis-data:
+    driver: local
+  gmaps-data:
+    driver: local

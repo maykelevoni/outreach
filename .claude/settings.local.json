@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker compose:*)",
+      "Bash(pnpm dev)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm dev:workers:*)",
+      "Bash(npm run dev:*)",
+      "Bash(Select-Object -First 100)",
+      "Bash(timeout 5 bash -c 'while ! curl -s http://localhost:8080/health > /dev/null 2>&1; do sleep 1; done; echo \"\"Scraper is ready\"\"')",
+      "Bash(curl:*)",
+      "Bash(pnpm tsx:*)",
+      "Bash(pnpm run seed:templates:*)",
+      "Bash(pnpm run db:seed:*)",
+      "Bash(set DATABASE_URL=postgresql://neondb_owner:npg_L8nbdMHrR2aI@ep-broad-lake-ahinw5iv-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require)",
+      "Bash(pnpm run dev:workers:*)",
+      "Bash(docker exec:*)",
+      "Bash(dir:*)",
+      "Bash(node:*)",
+      "Bash(taskkill:*)",
+      "Bash(timeout 5 bash:*)",
+      "Bash(powershell -Command \"\\(Get-Item ''c:\\\\Users\\\\mayke\\\\iCloudDrive\\\\App_Projects\\\\outreach\\\\packages\\\\scraper\\\\src\\\\maps\\\\outscraper-client.ts''\\).LastWriteTime = Get-Date\")",
+      "Bash(pnpm list:*)",
+      "Bash(powershell -Command \"\\(Get-Item ''c:\\\\Users\\\\mayke\\\\iCloudDrive\\\\App_Projects\\\\outreach\\\\packages\\\\queue\\\\src\\\\workers\\\\scrape-maps.ts''\\).LastWriteTime = Get-Date\")",
+      "Bash(powershell -Command:*)",
+      "Bash(timeout 15 bash:*)",
+      "Bash(Select-Object -Last 10)",
+      "Bash(cat:*)",
+      "Bash(docker ps:*)",
+      "Bash(pnpm run tsx:*)",
+      "Bash(pnpm add:*)"
+    ]
+  }
+}

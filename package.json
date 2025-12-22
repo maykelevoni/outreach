@@ -1,0 +1,33 @@
+{
+  "name": "outreach",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Email outreach automation system",
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "dev:workers": "pnpm --filter queue dev",
+    "build": "pnpm -r build",
+    "start": "pnpm --filter web start",
+    "start:workers": "pnpm --filter queue start",
+    "lint": "pnpm -r lint",
+    "type-check": "pnpm -r type-check",
+    "db:generate": "pnpm --filter database db:generate",
+    "db:migrate": "pnpm --filter database db:migrate",
+    "db:push": "pnpm --filter database db:push",
+    "db:studio": "pnpm --filter database db:studio",
+    "db:seed": "pnpm --filter database db:seed"
+  },
+  "keywords": [
+    "email",
+    "outreach",
+    "automation",
+    "google-maps",
+    "scraping"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}

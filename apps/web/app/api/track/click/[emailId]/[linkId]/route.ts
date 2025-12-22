@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from 'database/client'
-import { emails, emailEvents, emailLinks } from 'database/schema'
+import { db, emails, emailEvents, emailLinks } from 'database'
 import { eq, and } from 'drizzle-orm'
 
 export async function GET(

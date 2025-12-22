@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from 'database/client'
-import { leads, emails, emailEvents } from 'database/schema'
+import { db, leads, emails, emailEvents } from 'database'
 import { eq, and, desc } from 'drizzle-orm'
 
 // 1x1 transparent GIF pixel

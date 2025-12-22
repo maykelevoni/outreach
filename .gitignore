@@ -44,6 +44,7 @@ next-env.d.ts
 !.vscode/launch.json
 !.vscode/extensions.json
 .idea
+.claude/settings.local.json
 
 # Drizzle
 drizzle/

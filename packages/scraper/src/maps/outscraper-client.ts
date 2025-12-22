@@ -34,18 +34,14 @@ export async function scrapeWithOutscraper(options: OutscraperOptions): Promise<
 
     console.log(`  Query: "${query}", Limit: ${limit}`)
 
-    // Call Outscraper API
-    // Parameters: queries, limit, language, region, skip, dropDuplicates, enrichment, asyncRequest
-    // Set asyncRequest=false to get immediate synchronous results instead of pending status
+    // Call Outscraper API with parameters object
     const results = await client.googleMapsSearch(
       [query],
       limit,
       'en',
       'us',
-      0, // skip
-      false, // dropDuplicates
-      null, // enrichment
-      false // asyncRequest - IMPORTANT: set to false for sync results
+      {},  // coordinates
+      false // async - must be false for immediate results
     )
 
     console.log(`  Raw results type: ${typeof results}`)

@@ -21,55 +21,77 @@ export interface SendEmailsJobData {
   templateId: string
 }
 
-// Create queues
-export const scrapeMapsQueue = new Queue<ScrapeMapsJobData>(
-  QUEUE_NAMES.SCRAPE_MAPS,
-  {
-    connection: redisConnection,
-    defaultJobOptions: {
-      attempts: 3,
-      backoff: {
-        type: 'exponential',
-        delay: 5000,
-      },
-      removeOnComplete: {
-        age: 24 * 3600, // Keep for 24 hours
-        count: 1000,
-      },
-      removeOnFail: {
-        age: 7 * 24 * 3600, // Keep for 7 days
-      },
-    },
-  }
-)
+// Lazy queue creation - only create when needed
+let _scrapeMapsQueue: Queue<ScrapeMapsJobData> | null = null
+let _scrapeEmailsQueue: Queue<ScrapeEmailsJobData> | null = null
+let _sendEmailsQueue: Queue<SendEmailsJobData> | null = null
 
-export const scrapeEmailsQueue = new Queue<ScrapeEmailsJobData>(
-  QUEUE_NAMES.SCRAPE_EMAILS,
-  {
-    connection: redisConnection,
+export const getScrapeMapsQueue = () => {
+  if (!_scrapeMapsQueue) {
+    _scrapeMapsQueue = new Queue<ScrapeMapsJobData>(
+      QUEUE_NAMES.SCRAPE_MAPS,
+      {
+        connection: redisConnection,
+        defaultJobOptions: {
+          attempts: 3,
+          backoff: {
+            type: 'exponential',
+            delay: 5000,
+          },
+          removeOnComplete: {
+            age: 24 * 3600, // Keep for 24 hours
+            count: 1000,
+          },
+          removeOnFail: {
+            age: 7 * 24 * 3600, // Keep for 7 days
+          },
+        },
+      }
+    )
   }
-)
+  return _scrapeMapsQueue
+}
 
-export const sendEmailsQueue = new Queue<SendEmailsJobData>(
-  QUEUE_NAMES.SEND_EMAILS,
-  {
-    connection: redisConnection,
+export const getScrapeEmailsQueue = () => {
+  if (!_scrapeEmailsQueue) {
+    _scrapeEmailsQueue = new Queue<ScrapeEmailsJobData>(
+      QUEUE_NAMES.SCRAPE_EMAILS,
+      {
+        connection: redisConnection,
+      }
+    )
   }
-)
+  return _scrapeEmailsQueue
+}
+
+export const getSendEmailsQueue = () => {
+  if (!_sendEmailsQueue) {
+    _sendEmailsQueue = new Queue<SendEmailsJobData>(
+      QUEUE_NAMES.SEND_EMAILS,
+      {
+        connection: redisConnection,
+      }
+    )
+  }
+  return _sendEmailsQueue
+}
 
 // Helper functions to add jobs
 export async function queueMapsScrapingJob(data: ScrapeMapsJobData) {
-  return await scrapeMapsQueue.add('scrape-google-maps', data, {
+  const queue = getScrapeMapsQueue()
+  return await queue.add('scrape-google-maps', data, {
     jobId: `campaign-${data.campaignId}`,
   })
 }
 
 export async function queueEmailScrapingJob(data: ScrapeEmailsJobData) {
-  return await scrapeEmailsQueue.add('scrape-email', data, {
+  const queue = getScrapeEmailsQueue()
+  return await queue.add('scrape-email', data, {
     jobId: `lead-${data.leadId}`,
   })
 }
 
 export async function queueSendEmailJob(data: SendEmailsJobData) {
-  return await sendEmailsQueue.add('send-email', data)
+  const queue = getSendEmailsQueue()
+  return await queue.add('send-email', data)
 }

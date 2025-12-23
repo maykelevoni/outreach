@@ -1,7 +1,8 @@
 import { z } from 'zod'
 import { createTRPCRouter, publicProcedure } from '../server'
-import { campaigns, leads, emails } from 'database'
+import { campaigns, leads, emails, emailTemplates } from 'database'
 import { eq, sql, and } from 'drizzle-orm'
+import { renderEmailTemplate } from '../../../../../packages/email/src/templates/engine'
 
 const createCampaignSchema = z.object({
   name: z.string().min(1).max(255),
@@ -162,6 +163,17 @@ export const campaignsRouter = createTRPCRouter({
         throw new Error('Campaign must have a template before sending')
       }
 
+      // Get the template
+      const [template] = await ctx.db
+        .select()
+        .from(emailTemplates)
+        .where(eq(emailTemplates.id, campaign[0].templateId))
+        .limit(1)
+
+      if (!template) {
+        throw new Error('Template not found')
+      }
+
       // Get leads with emails that haven't been sent to yet
       const leadsToSend = await ctx.db
         .select()
@@ -183,6 +195,21 @@ export const campaignsRouter = createTRPCRouter({
 
       // Create email records and queue send jobs
       for (const lead of leadsToSend) {
+        // Render template with lead data
+        const variables = {
+          businessName: lead.businessName,
+          email: lead.email || undefined,
+          phone: lead.phone || undefined,
+          website: lead.website || undefined,
+          address: lead.address || undefined,
+          rating: lead.rating || undefined,
+          reviewCount: lead.reviewCount || undefined,
+        }
+
+        const subject = renderEmailTemplate(template.subject, variables)
+        const bodyHtml = renderEmailTemplate(template.bodyHtml, variables)
+        const bodyText = renderEmailTemplate(template.bodyText, variables)
+
         // Create email record
         const [emailRecord] = await ctx.db
           .insert(emailsTable)
@@ -190,6 +217,9 @@ export const campaignsRouter = createTRPCRouter({
             leadId: lead.id,
             campaignId,
             templateId: campaign[0].templateId!,
+            subject,
+            bodyHtml,
+            bodyText,
             status: 'queued',
           })
           .returning()

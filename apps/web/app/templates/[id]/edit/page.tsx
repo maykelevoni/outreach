@@ -22,7 +22,6 @@ export default function EditTemplatePage() {
   const [subject, setSubject] = useState('')
   const [bodyHtml, setBodyHtml] = useState('')
   const [bodyText, setBodyText] = useState('')
-  const [description, setDescription] = useState('')
   const [previewHtml, setPreviewHtml] = useState('')
   const [showPreview, setShowPreview] = useState(false)
 
@@ -41,7 +40,6 @@ export default function EditTemplatePage() {
       setSubject(template.subject)
       setBodyHtml(template.bodyHtml)
       setBodyText(template.bodyText)
-      setDescription(template.description || '')
     }
   }, [template])
 
@@ -86,7 +84,6 @@ export default function EditTemplatePage() {
         bodyHtml,
         bodyText,
         variables,
-        description: description || undefined,
       },
     })
   }
@@ -166,16 +163,6 @@ export default function EditTemplatePage() {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g., Professional Introduction"
                 required
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="description">Description (Optional)</Label>
-              <Input
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Brief description of this template"
               />
             </div>
 

@@ -17,7 +17,6 @@ export default function NewTemplatePage() {
   const [subject, setSubject] = useState('')
   const [bodyHtml, setBodyHtml] = useState('')
   const [bodyText, setBodyText] = useState('')
-  const [description, setDescription] = useState('')
   const [showPreview, setShowPreview] = useState(false)
   const [previewVars, setPreviewVars] = useState({
     firstName: 'John',
@@ -63,7 +62,6 @@ export default function NewTemplatePage() {
       bodyHtml,
       bodyText,
       variables,
-      description: description || undefined,
     })
   }
 
@@ -122,16 +120,6 @@ export default function NewTemplatePage() {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g., Professional Introduction"
                 required
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="description">Description (Optional)</Label>
-              <Input
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Brief description of this template"
               />
             </div>
 

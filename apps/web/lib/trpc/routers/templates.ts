@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { createTRPCRouter, publicProcedure } from '../server'
 import { emailTemplates } from 'database'
 import { eq } from 'drizzle-orm'
+import { templateEngine, renderEmailTemplate, type TemplateVariables } from '../../../../../packages/email/src/templates/engine'
 
 const createTemplateSchema = z.object({
   name: z.string().min(1).max(255),
@@ -60,10 +61,8 @@ export const templatesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { templateEngine } = await import('email')
-
       try {
-        const rendered = templateEngine.render(input.template, input.variables)
+        const rendered = templateEngine.render(input.template, input.variables as TemplateVariables)
         return { success: true, rendered }
       } catch (error) {
         return {
@@ -76,14 +75,12 @@ export const templatesRouter = createTRPCRouter({
   validateTemplate: publicProcedure
     .input(z.string())
     .mutation(async ({ ctx, input: template }) => {
-      const { validateTemplate } = await import('email')
-      return validateTemplate(template)
+      return templateEngine.validateTemplate(template)
     }),
 
   extractVariables: publicProcedure
     .input(z.string())
     .mutation(async ({ ctx, input: template }) => {
-      const { templateEngine } = await import('email')
       const variables = templateEngine.extractVariables(template)
       return { variables }
     }),

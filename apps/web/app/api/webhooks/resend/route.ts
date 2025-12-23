@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     // Record the event
     await db.insert(emailEvents).values({
       emailId: email.id,
-      eventType,
+      eventType: eventType as any,
       metadata: {
         resendEventType: event.type,
         resendEmailId,
@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
         .update(emails)
         .set({
           status: 'bounced',
-          error: 'Email bounced',
+          errorMessage: 'Email bounced',
           updatedAt: new Date(),
         })
         .where(eq(emails.id, email.id))
@@ -115,17 +115,17 @@ export async function POST(request: NextRequest) {
       await db
         .update(emails)
         .set({
-          status: 'complained',
-          error: 'Spam complaint',
+          status: 'failed',
+          errorMessage: 'Spam complaint',
           updatedAt: new Date(),
         })
         .where(eq(emails.id, email.id))
 
-      // Update lead to complained (stop sending)
+      // Update lead to unsubscribed (stop sending)
       await db
         .update(leads)
         .set({
-          status: 'complained',
+          status: 'unsubscribed',
           updatedAt: new Date(),
         })
         .where(eq(leads.id, email.leadId))

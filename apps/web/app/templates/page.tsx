@@ -72,9 +72,6 @@ export default function TemplatesPage() {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <CardTitle className="text-xl">{template.name}</CardTitle>
-                    {template.description && (
-                      <CardDescription className="mt-2">{template.description}</CardDescription>
-                    )}
                   </div>
                   {template.isDefault && (
                     <Badge variant="secondary" className="ml-2">

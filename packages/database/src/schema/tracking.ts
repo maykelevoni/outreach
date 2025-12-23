@@ -17,13 +17,7 @@ export const emailEvents = pgTable('email_events', {
     .references(() => emails.id, { onDelete: 'cascade' })
     .notNull(),
   eventType: emailEventTypeEnum('event_type').notNull(),
-  metadata: jsonb('metadata').$type<{
-    ip?: string
-    userAgent?: string
-    linkUrl?: string
-    bounceType?: string
-    errorCode?: string
-  }>(),
+  metadata: jsonb('metadata').$type<Record<string, any>>(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 

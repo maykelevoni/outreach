@@ -1,8 +1,9 @@
 import { z } from 'zod'
 import { createTRPCRouter, publicProcedure } from '../server'
-import { leads, campaigns, emails } from 'database'
+import { leads, campaigns, emails, emailTemplates } from 'database'
 import { eq } from 'drizzle-orm'
 import { queueSendEmailJob } from 'queue'
+import { renderEmailTemplate } from '../../../../../packages/email/src/templates/engine'
 
 export const leadsRouter = createTRPCRouter({
   listByCampaign: publicProcedure
@@ -55,6 +56,32 @@ export const leadsRouter = createTRPCRouter({
         throw new Error('Campaign has no email template selected')
       }
 
+      // Get the template
+      const [template] = await ctx.db
+        .select()
+        .from(emailTemplates)
+        .where(eq(emailTemplates.id, campaign.templateId))
+        .limit(1)
+
+      if (!template) {
+        throw new Error('Template not found')
+      }
+
+      // Render template with lead data
+      const variables = {
+        businessName: lead.businessName,
+        email: lead.email || undefined,
+        phone: lead.phone || undefined,
+        website: lead.website || undefined,
+        address: lead.address || undefined,
+        rating: lead.rating || undefined,
+        reviewCount: lead.reviewCount || undefined,
+      }
+
+      const subject = renderEmailTemplate(template.subject, variables)
+      const bodyHtml = renderEmailTemplate(template.bodyHtml, variables)
+      const bodyText = renderEmailTemplate(template.bodyText, variables)
+
       // Create email record
       const [email] = await ctx.db
         .insert(emails)
@@ -62,8 +89,10 @@ export const leadsRouter = createTRPCRouter({
           leadId: lead.id,
           campaignId: lead.campaignId,
           templateId: campaign.templateId,
-          to: lead.email,
-          status: 'pending',
+          subject,
+          bodyHtml,
+          bodyText,
+          status: 'queued',
         })
         .returning()
 

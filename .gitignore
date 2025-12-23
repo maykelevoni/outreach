@@ -51,3 +51,6 @@ drizzle/
 
 # Docker
 *.sql
+
+.vercel
+.env*.local

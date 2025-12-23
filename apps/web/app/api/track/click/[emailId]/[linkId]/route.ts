@@ -18,8 +18,8 @@ export async function GET(
 
     // Record the click event
     await db.insert(emailEvents).values({
-      emailId,
-      eventType: 'clicked',
+      emailId: emailId,
+      eventType: 'clicked' as const,
       metadata: {
         linkId,
         url: link.originalUrl,
@@ -33,9 +33,7 @@ export async function GET(
     await db
       .update(emailLinks)
       .set({
-        clicks: (link.clicks || 0) + 1,
-        lastClickedAt: new Date(),
-        updatedAt: new Date(),
+        clickCount: (link.clickCount || 0) + 1,
       })
       .where(eq(emailLinks.id, linkId))
 
